@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ColorMe — AI Cosmetics Color Matching</title>
+<style>
+  :root { --theme: #A88080; --bg: #FDFBF9; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'SF Pro Display', 'Noto Sans TC', sans-serif;
+    background: var(--bg); color: #1d1d1f;
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 40px 20px;
+    text-align: center;
+  }
+  .logo { font-size: 48px; font-weight: 700; letter-spacing: -1px; margin-bottom: 8px; }
+  .logo span { color: var(--theme); }
+  .tagline { font-size: 18px; color: #6e6e73; margin-bottom: 32px; font-weight: 400; }
+  .card {
+    background: #fff; border-radius: 20px; padding: 36px 32px;
+    box-shadow: 0 4px 24px rgba(168,128,128,0.1); max-width: 420px; width: 100%;
+    margin-bottom: 24px;
+  }
+  .card h2 { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
+  .features { list-style: none; text-align: left; }
+  .features li {
+    padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05);
+    font-size: 15px; color: #3a3a3c; display: flex; align-items: center; gap: 10px;
+  }
+  .features li:last-child { border-bottom: none; }
+  .features li::before { content: ''; display: inline-block; width: 8px; height: 8px;
+    border-radius: 50%; background: var(--theme); flex-shrink: 0; }
+  .badge {
+    display: inline-block; padding: 10px 28px; border-radius: 100px;
+    background: var(--theme); color: #fff; font-size: 15px; font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .sub { font-size: 13px; color: #aeaeb2; margin-top: 16px; }
+  .footer { margin-top: 40px; font-size: 12px; color: #aeaeb2; }
+</style>
+</head>
+<body>
+
+<div class="logo">Color<span>Me</span></div>
+<p class="tagline">AI-Powered Cosmetics Color Matching</p>
+
+<div class="card">
+  <h2>Find Your Perfect Colors</h2>
+  <ul class="features">
+    <li>AI skin tone analysis with 3 selfies</li>
+    <li>Personal color profile across 7 dimensions</li>
+    <li>CIEDE2000 product matching scores</li>
+    <li>2,000+ makeup products from top K-beauty brands</li>
+    <li>Skincare matching with 6-dimension skin profiling</li>
+    <li>12 seasonal color types with personalized palettes</li>
+  </ul>
+</div>
+
+<div class="badge">Coming Soon on the App Store</div>
+<p class="sub">iOS App &middot; Launching 2026</p>
+
+<div class="footer">&copy; 2026 ColorMe. All rights reserved.</div>
+
+</body>
+</html>
