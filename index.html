@@ -3,64 +3,1423 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ColorMe — AI Cosmetics Color Matching</title>
+<title>ColorMe — 找到最適合你的顏色</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 <style>
-  :root { --theme: #A88080; --bg: #FDFBF9; }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, 'SF Pro Display', 'Noto Sans TC', sans-serif;
-    background: var(--bg); color: #1d1d1f;
-    min-height: 100vh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; padding: 40px 20px;
-    text-align: center;
-  }
-  .logo { font-size: 48px; font-weight: 700; letter-spacing: -1px; margin-bottom: 8px; }
-  .logo span { color: var(--theme); }
-  .tagline { font-size: 18px; color: #6e6e73; margin-bottom: 32px; font-weight: 400; }
-  .card {
-    background: #fff; border-radius: 20px; padding: 36px 32px;
-    box-shadow: 0 4px 24px rgba(168,128,128,0.1); max-width: 420px; width: 100%;
-    margin-bottom: 24px;
-  }
-  .card h2 { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
-  .features { list-style: none; text-align: left; }
-  .features li {
-    padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05);
-    font-size: 15px; color: #3a3a3c; display: flex; align-items: center; gap: 10px;
-  }
-  .features li:last-child { border-bottom: none; }
-  .features li::before { content: ''; display: inline-block; width: 8px; height: 8px;
-    border-radius: 50%; background: var(--theme); flex-shrink: 0; }
-  .badge {
-    display: inline-block; padding: 10px 28px; border-radius: 100px;
-    background: var(--theme); color: #fff; font-size: 15px; font-weight: 600;
-    letter-spacing: 0.3px;
-  }
-  .sub { font-size: 13px; color: #aeaeb2; margin-top: 16px; }
-  .footer { margin-top: 40px; font-size: 12px; color: #aeaeb2; }
+/* ==================== RESET & BASE ==================== */
+:root {
+  --theme: #A88080;
+  --theme-dark: #8E6A6A;
+  --theme-light: #D4B5B5;
+  --theme-pale: #F5EDEB;
+  --bg: #FAFAF8;
+  --white: #FFFFFF;
+  --text: #1d1d1f;
+  --text2: #48484a;
+  --text3: #8e8e93;
+  --accent: #E24B4B;
+  --green: #2ecc71;
+  --orange: #f39c12;
+  --blue: #4A90D9;
+  --purple: #7F77DD;
+  --radius: 20px;
+  --radius-sm: 12px;
+  --shadow: 0 2px 20px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.08);
+  --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans TC', -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+html[lang="ja"] body { font-family: 'Noto Sans JP', -apple-system, sans-serif; }
+html[lang="ko"] body { font-family: 'Noto Sans KR', -apple-system, sans-serif; }
+
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ==================== NAV ==================== */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(250,250,248,0.85);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  transition: transform 0.35s ease;
+}
+.nav-inner {
+  max-width: 1120px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  font-size: 20px; font-weight: 700; letter-spacing: -0.5px;
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-logo span { color: var(--theme); }
+.nav-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--theme), var(--theme-dark));
+}
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a {
+  font-size: 14px; font-weight: 500; color: var(--text2);
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--theme); }
+.nav-cta {
+  background: var(--text); color: var(--white) !important;
+  padding: 8px 20px; border-radius: 100px;
+  font-size: 13px !important; font-weight: 600 !important;
+  transition: all 0.3s !important;
+}
+.nav-cta:hover { background: var(--theme) !important; transform: scale(1.03); }
+
+/* ===== Language Switcher ===== */
+.lang-switcher {
+  position: relative; margin-left: 8px;
+}
+.lang-current {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 12px; border-radius: 8px;
+  background: rgba(0,0,0,0.04);
+  font-size: 13px; font-weight: 600; color: var(--text2);
+  cursor: pointer; border: none; font-family: inherit;
+  transition: all 0.2s; user-select: none;
+}
+.lang-current:hover { background: rgba(0,0,0,0.07); }
+.lang-current svg {
+  width: 12px; height: 12px; color: var(--text3);
+  transition: transform 0.25s;
+}
+.lang-switcher.open .lang-current svg { transform: rotate(180deg); }
+
+.lang-dropdown {
+  position: absolute; top: calc(100% + 6px); right: 0;
+  background: var(--white); border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04);
+  padding: 6px; min-width: 150px;
+  opacity: 0; visibility: hidden;
+  transform: translateY(-8px) scale(0.96);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 200;
+}
+.lang-switcher.open .lang-dropdown {
+  opacity: 1; visibility: visible;
+  transform: translateY(0) scale(1);
+}
+.lang-option {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500; color: var(--text2);
+  cursor: pointer; transition: background 0.15s;
+  border: none; background: none; width: 100%;
+  font-family: inherit; text-align: left;
+}
+.lang-option:hover { background: var(--theme-pale); }
+.lang-option.active { color: var(--theme-dark); font-weight: 600; background: var(--theme-pale); }
+.lang-option-flag { font-size: 16px; line-height: 1; }
+.lang-option-check {
+  margin-left: auto; opacity: 0; font-size: 14px; color: var(--theme);
+}
+.lang-option.active .lang-option-check { opacity: 1; }
+
+.nav-mobile-toggle {
+  display: none; background: none; border: none; cursor: pointer;
+  width: 32px; height: 32px; position: relative;
+}
+.nav-mobile-toggle span {
+  display: block; width: 20px; height: 2px; background: var(--text);
+  border-radius: 2px; position: absolute; left: 6px;
+  transition: all 0.3s;
+}
+.nav-mobile-toggle span:nth-child(1) { top: 10px; }
+.nav-mobile-toggle span:nth-child(2) { top: 15px; }
+.nav-mobile-toggle span:nth-child(3) { top: 20px; }
+
+/* ==================== SECTION COMMON ==================== */
+section { padding: 120px 0; }
+
+.section-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 100px;
+  background: var(--theme-pale);
+  font-size: 12px; font-weight: 600; color: var(--theme-dark);
+  letter-spacing: 0.5px; text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.section-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--theme);
+}
+
+.section-title {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 700; letter-spacing: -0.5px;
+  line-height: 1.3; margin-bottom: 16px;
+}
+
+.section-desc {
+  font-size: 17px; color: var(--text2);
+  max-width: 560px; line-height: 1.8;
+}
+
+/* ==================== BLOCK 1 — HERO ==================== */
+.hero {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  padding-top: 64px;
+  background: linear-gradient(180deg, #FFF 0%, var(--theme-pale) 50%, var(--bg) 100%);
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -200px; right: -200px;
+  width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(168,128,128,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: -100px; left: -100px;
+  width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(168,128,128,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: center;
+  position: relative; z-index: 2;
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-radius: 100px;
+  background: var(--white);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  font-size: 13px; font-weight: 600; color: var(--theme-dark);
+  margin-bottom: 24px;
+}
+.hero-eyebrow-pulse {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.4); }
+}
+
+.hero h1 {
+  font-size: clamp(36px, 5.5vw, 56px);
+  font-weight: 900; letter-spacing: -1px;
+  line-height: 1.2; margin-bottom: 20px;
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--theme) 0%, var(--theme-dark) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 18px; color: var(--text2);
+  line-height: 1.8; margin-bottom: 36px;
+  max-width: 460px;
+}
+
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 28px; border-radius: 14px;
+  background: var(--text); color: var(--white);
+  font-size: 15px; font-weight: 600;
+  transition: all 0.3s; border: none; cursor: pointer;
+}
+.btn-primary:hover { background: var(--theme); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(168,128,128,0.3); }
+.btn-primary svg { width: 20px; height: 20px; }
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 28px; border-radius: 14px;
+  background: var(--white); color: var(--text);
+  font-size: 15px; font-weight: 600;
+  border: 1.5px solid rgba(0,0,0,0.08);
+  transition: all 0.3s; cursor: pointer;
+}
+.btn-secondary:hover { border-color: var(--theme); color: var(--theme); transform: translateY(-2px); }
+
+.hero-countdown {
+  display: flex; gap: 20px;
+}
+.countdown-item { text-align: center; }
+.countdown-num {
+  font-size: 32px; font-weight: 700; color: var(--theme);
+  line-height: 1; letter-spacing: -1px;
+}
+.countdown-label {
+  font-size: 11px; color: var(--text3); font-weight: 500;
+  margin-top: 4px; letter-spacing: 0.5px;
+}
+
+.hero-visual {
+  display: flex; justify-content: center; align-items: center;
+  position: relative;
+}
+.hero-phone {
+  width: 280px; height: 580px; border-radius: 40px;
+  background: var(--white);
+  box-shadow: 0 20px 80px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04);
+  position: relative; overflow: hidden;
+  animation: phoneFloat 6s ease-in-out infinite;
+}
+@keyframes phoneFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.phone-notch {
+  width: 120px; height: 28px; background: var(--text);
+  border-radius: 0 0 16px 16px; margin: 0 auto;
+  position: relative; z-index: 2;
+}
+.phone-screen { padding: 16px; }
+.phone-greeting { font-size: 13px; color: var(--text3); margin-bottom: 4px; }
+.phone-username { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+.phone-avatar-row {
+  display: flex; flex-direction: column; align-items: center; margin-bottom: 16px;
+}
+.phone-avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--theme-light), var(--theme));
+  margin-bottom: 8px;
+}
+.phone-group {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 12px; color: var(--text2);
+}
+.phone-group-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--theme);
+}
+.phone-card {
+  background: var(--bg); border-radius: 14px;
+  padding: 14px; margin-bottom: 10px;
+}
+.phone-card-title {
+  font-size: 11px; color: var(--text3); font-weight: 600;
+  margin-bottom: 8px; letter-spacing: 0.3px;
+}
+.phone-spectrum-row { margin-bottom: 6px; }
+.phone-spectrum-label {
+  font-size: 10px; color: var(--text2); margin-bottom: 3px;
+  display: flex; justify-content: space-between;
+}
+.phone-spectrum-track {
+  height: 4px; background: rgba(0,0,0,0.04); border-radius: 2px;
+  overflow: hidden;
+}
+.phone-spectrum-fill { height: 100%; border-radius: 2px; }
+.phone-colors { display: flex; gap: 6px; margin-top: 12px; }
+.phone-color-dot {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.8);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* ==================== BLOCK 2 — WHAT IS ==================== */
+.what-is { background: var(--white); }
+.what-is-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  margin-top: 48px;
+}
+.what-is-card {
+  padding: 32px; border-radius: var(--radius);
+  background: var(--bg);
+  border: 1px solid rgba(0,0,0,0.04);
+  transition: all var(--transition);
+}
+.what-is-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.what-is-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin-bottom: 16px;
+}
+.what-is-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.what-is-card p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+
+/* ==================== BLOCK 3 — AI ANALYSIS ==================== */
+.ai-analysis { position: relative; overflow: hidden; }
+.ai-analysis-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center; margin-top: 48px;
+}
+.ai-steps { display: flex; flex-direction: column; gap: 24px; }
+.ai-step {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 20px; border-radius: var(--radius-sm);
+  transition: all 0.3s;
+}
+.ai-step:hover { background: var(--white); box-shadow: var(--shadow); }
+.ai-step-num {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--theme-pale); color: var(--theme-dark);
+  font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ai-step h4 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.ai-step p { font-size: 13px; color: var(--text3); line-height: 1.6; }
+
+.ai-visual { display: flex; justify-content: center; align-items: center; }
+.ai-demo {
+  width: 100%; max-width: 400px;
+  background: var(--white); border-radius: 24px;
+  box-shadow: var(--shadow-lg); overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+.ai-demo-header {
+  padding: 20px 24px; border-bottom: 1px solid rgba(0,0,0,0.04);
+  display: flex; align-items: center; gap: 10px;
+}
+.ai-demo-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--theme), var(--theme-dark));
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 16px;
+}
+.ai-demo-header-text h4 { font-size: 14px; font-weight: 600; }
+.ai-demo-header-text p { font-size: 11px; color: var(--text3); }
+.ai-demo-body { padding: 24px; }
+.ai-demo-dimensions { display: flex; flex-direction: column; gap: 14px; }
+.ai-dim-label { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.ai-dim-name { font-size: 13px; font-weight: 500; }
+.ai-dim-value { font-size: 13px; font-weight: 600; color: var(--theme); }
+.ai-dim-track {
+  height: 6px; background: rgba(0,0,0,0.04); border-radius: 3px;
+  overflow: hidden; position: relative;
+}
+.ai-dim-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ai-dim-ends {
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: var(--text3); margin-top: 2px;
+}
+
+/* ==================== BLOCK 4 — 12 SEASON TYPES ==================== */
+.season-types { background: var(--white); overflow: hidden; }
+.season-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  margin-top: 48px;
+}
+.season-card {
+  padding: 20px; border-radius: var(--radius);
+  text-align: center;
+  background: var(--bg); border: 1px solid rgba(0,0,0,0.03);
+  transition: all 0.35s ease; cursor: default;
+}
+.season-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: var(--shadow-lg); }
+.season-bubble {
+  width: 56px; height: 56px; border-radius: 50%;
+  margin: 0 auto 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+.season-name { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.season-sub { font-size: 11px; color: var(--text3); font-weight: 500; }
+
+/* ==================== BLOCK 5 — MATCHING ==================== */
+.matching { position: relative; }
+.matching-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center; margin-top: 48px;
+}
+.matching-visual { order: -1; }
+.matching-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.match-card {
+  background: var(--white); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow);
+  transition: all 0.3s;
+}
+.match-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.match-card-img {
+  width: 100%; aspect-ratio: 1; position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.match-card-img-bg {
+  width: 100%; height: 100%; background: #FAFAFA;
+  display: flex; align-items: center; justify-content: center;
+}
+.match-lipstick { width: 40px; height: 80px; border-radius: 6px 6px 3px 3px; }
+.match-score-badge {
+  position: absolute; top: 8px; left: 8px;
+  padding: 3px 8px; border-radius: 6px;
+  font-size: 11px; font-weight: 700;
+  backdrop-filter: blur(8px);
+}
+.match-score-badge.high { background: rgba(46,204,113,0.15); color: #1a9a56; }
+.match-score-badge.mid { background: rgba(243,156,18,0.15); color: #c47f10; }
+.match-card-info { padding: 10px 12px 12px; }
+.match-card-brand { font-size: 10px; color: var(--text3); font-weight: 600; letter-spacing: 0.3px; }
+.match-card-name { font-size: 13px; font-weight: 600; margin-top: 2px; }
+.match-card-hex {
+  display: flex; align-items: center; gap: 4px; margin-top: 4px;
+  font-size: 11px; color: var(--text3); font-family: 'SF Mono', monospace;
+}
+.match-card-hex-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+.matching-features { display: flex; flex-direction: column; gap: 20px; margin-top: 32px; }
+.matching-feat {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 16px; border-radius: var(--radius-sm);
+  background: var(--white); border: 1px solid rgba(0,0,0,0.04);
+}
+.matching-feat-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.matching-feat h4 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.matching-feat p { font-size: 13px; color: var(--text3); line-height: 1.5; }
+
+/* ==================== BLOCK 6 — SKINCARE ==================== */
+.skincare {
+  background: linear-gradient(180deg, var(--white) 0%, var(--theme-pale) 100%);
+}
+.skincare-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center; margin-top: 48px;
+}
+.skincare-dims {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px;
+}
+.skincare-dim {
+  padding: 14px; border-radius: var(--radius-sm);
+  background: var(--white); border: 1px solid rgba(0,0,0,0.04);
+}
+.skincare-dim-name { font-size: 12px; color: var(--text3); font-weight: 600; margin-bottom: 4px; }
+.skincare-dim-bar {
+  height: 4px; border-radius: 2px; background: rgba(0,0,0,0.04); overflow: hidden;
+}
+.skincare-dim-fill { height: 100%; border-radius: 2px; background: var(--theme); }
+
+/* ==================== BLOCK 7 — ENCYCLOPEDIA ==================== */
+.encyclopedia { background: var(--white); }
+.encyclopedia-features {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
+  margin-top: 48px;
+}
+.ency-card {
+  padding: 32px; border-radius: var(--radius);
+  border: 1px solid rgba(0,0,0,0.04);
+  background: var(--bg); transition: all 0.3s;
+}
+.ency-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.ency-card-icon { font-size: 32px; margin-bottom: 12px; }
+.ency-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.ency-card p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+.ency-card-tag {
+  display: inline-block; margin-top: 12px;
+  padding: 4px 10px; border-radius: 6px;
+  font-size: 11px; font-weight: 600;
+  background: var(--theme-pale); color: var(--theme-dark);
+}
+
+/* ==================== BLOCK 8 — SOCIAL ==================== */
+.social { position: relative; }
+.social-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center; margin-top: 48px;
+}
+.social-features { display: flex; flex-direction: column; gap: 24px; }
+.social-feat { display: flex; gap: 16px; align-items: flex-start; }
+.social-feat-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.social-feat h4 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.social-feat p { font-size: 13px; color: var(--text3); line-height: 1.6; }
+
+.social-chat-demo {
+  background: var(--white); border-radius: 24px;
+  box-shadow: var(--shadow-lg);
+  padding: 24px; max-width: 360px; margin: 0 auto;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+.chat-header {
+  display: flex; align-items: center; gap: 10px;
+  padding-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,0.04);
+  margin-bottom: 16px;
+}
+.chat-avatar { width: 36px; height: 36px; border-radius: 50%; }
+.chat-name { font-size: 14px; font-weight: 600; }
+.chat-status { font-size: 11px; color: var(--green); }
+.chat-messages { display: flex; flex-direction: column; gap: 8px; }
+.chat-msg {
+  max-width: 80%; padding: 10px 14px; border-radius: 16px;
+  font-size: 13px; line-height: 1.5;
+}
+.chat-msg.received {
+  background: var(--bg); align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+.chat-msg.sent {
+  background: var(--theme); color: white; align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+.chat-product-card {
+  align-self: flex-start; background: var(--white);
+  border: 1px solid rgba(0,0,0,0.06); border-radius: 14px;
+  padding: 10px; display: flex; gap: 10px; max-width: 85%;
+}
+.chat-product-swatch {
+  width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
+}
+.chat-product-name { font-size: 12px; font-weight: 600; }
+.chat-product-score { font-size: 11px; color: var(--green); font-weight: 600; }
+
+/* ==================== BLOCK 9 — PRIVACY ==================== */
+.privacy-section { background: var(--text); color: var(--white); }
+.privacy-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  margin-top: 48px;
+}
+.privacy-card {
+  padding: 28px; border-radius: var(--radius);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.privacy-card-icon { font-size: 28px; margin-bottom: 12px; }
+.privacy-card h3 {
+  font-size: 17px; font-weight: 600; margin-bottom: 8px; color: var(--white);
+}
+.privacy-card p { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.7; }
+
+/* ==================== BLOCK 10 — CTA ==================== */
+.final-cta {
+  background: linear-gradient(180deg, var(--bg) 0%, var(--theme-pale) 40%, var(--theme-light) 100%);
+  text-align: center; padding: 140px 0;
+}
+.final-cta .section-title { margin-bottom: 12px; }
+.final-cta .section-desc {
+  margin: 0 auto 40px; text-align: center; max-width: 480px;
+}
+.cta-date {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: 100px;
+  background: var(--white); box-shadow: var(--shadow);
+  font-size: 15px; font-weight: 600; color: var(--theme-dark);
+  margin-bottom: 32px;
+}
+.cta-date-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green); animation: pulse 2s ease infinite;
+}
+.cta-stores { display: flex; gap: 12px; justify-content: center; }
+.store-badge {
+  height: 48px; padding: 0 20px; border-radius: 12px;
+  background: var(--text); color: var(--white);
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 600; transition: all 0.3s;
+}
+.store-badge:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+.store-badge svg { width: 22px; height: 22px; }
+
+/* ==================== FOOTER ==================== */
+footer {
+  background: var(--text); color: rgba(255,255,255,0.4); padding: 40px 0;
+}
+.footer-inner {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-logo { font-size: 16px; font-weight: 700; color: var(--white); }
+.footer-logo span { color: var(--theme-light); }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a {
+  font-size: 13px; color: rgba(255,255,255,0.4); transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--white); }
+.footer-copy {
+  font-size: 12px; text-align: center; margin-top: 24px;
+  padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ==================== ANIMATIONS ==================== */
+.fade-up {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr; text-align: center; }
+  .hero-subtitle { margin: 0 auto 36px; }
+  .hero-actions { justify-content: center; }
+  .hero-countdown { justify-content: center; }
+  .hero-visual { margin-top: 40px; }
+  .ai-analysis-grid,
+  .matching-grid,
+  .skincare-grid,
+  .social-grid { grid-template-columns: 1fr; gap: 40px; }
+  .matching-visual { order: 0; }
+  .what-is-grid { grid-template-columns: 1fr; }
+  .season-grid { grid-template-columns: repeat(3, 1fr); }
+  .encyclopedia-features { grid-template-columns: 1fr; }
+  .privacy-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .nav-mobile-toggle { display: block; }
+  .lang-switcher { margin-left: auto; margin-right: 12px; }
+}
+@media (max-width: 600px) {
+  section { padding: 80px 0; }
+  .season-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .season-card { padding: 14px; }
+  .matching-cards { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .skincare-dims { grid-template-columns: 1fr; }
+  .hero-phone { width: 240px; height: 500px; }
+  .hero-countdown { gap: 12px; }
+  .countdown-num { font-size: 24px; }
+  .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+}
 </style>
 </head>
 <body>
 
-<div class="logo">Color<span>Me</span></div>
-<p class="tagline">AI-Powered Cosmetics Color Matching</p>
+<!-- ==================== NAV ==================== -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo"><div class="nav-dot"></div> Color<span>Me</span></a>
+    <div class="nav-links">
+      <a href="#features" data-i18n="nav_features">功能</a>
+      <a href="#analysis" data-i18n="nav_analysis">AI 分析</a>
+      <a href="#seasons" data-i18n="nav_seasons">色彩類型</a>
+      <a href="#skincare" data-i18n="nav_skincare">護膚</a>
+      <a href="#download" class="nav-cta" data-i18n="nav_download">立即下載</a>
+    </div>
+    <div class="lang-switcher" id="langSwitcher">
+      <button class="lang-current" id="langBtn">
+        <span id="langFlag">🇹🇼</span>
+        <span id="langLabel">中文</span>
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4.5L6 7.5L9 4.5"/></svg>
+      </button>
+      <div class="lang-dropdown">
+        <button class="lang-option active" data-lang="zh-TW">
+          <span class="lang-option-flag">🇹🇼</span> 繁體中文
+          <span class="lang-option-check">✓</span>
+        </button>
+        <button class="lang-option" data-lang="en">
+          <span class="lang-option-flag">🇺🇸</span> English
+          <span class="lang-option-check">✓</span>
+        </button>
+        <button class="lang-option" data-lang="ja">
+          <span class="lang-option-flag">🇯🇵</span> 日本語
+          <span class="lang-option-check">✓</span>
+        </button>
+        <button class="lang-option" data-lang="ko">
+          <span class="lang-option-flag">🇰🇷</span> 한국어
+          <span class="lang-option-check">✓</span>
+        </button>
+      </div>
+    </div>
+    <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('show')">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
 
-<div class="card">
-  <h2>Find Your Perfect Colors</h2>
-  <ul class="features">
-    <li>AI skin tone analysis with 3 selfies</li>
-    <li>Personal color profile across 7 dimensions</li>
-    <li>CIEDE2000 product matching scores</li>
-    <li>2,000+ makeup products from top K-beauty brands</li>
-    <li>Skincare matching with 6-dimension skin profiling</li>
-    <li>12 seasonal color types with personalized palettes</li>
-  </ul>
-</div>
+<!-- ==================== BLOCK 1 — HERO ==================== -->
+<section class="hero" id="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <span class="hero-eyebrow-pulse"></span>
+          <span data-i18n="hero_eyebrow">2026 年 5 月 1 日正式上線</span>
+        </div>
+        <h1 data-i18n="hero_title_html">找到最適合<br>你的<em>顏色</em></h1>
+        <p class="hero-subtitle" data-i18n="hero_subtitle">拍 3 張素顏照，AI 精準分析你的膚色光譜，從數千件美妝商品中，找出最適合你的色號。</p>
+        <div class="hero-actions">
+          <a href="#download" class="btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+            <span data-i18n="hero_cta">預約下載</span>
+          </a>
+          <a href="#analysis" class="btn-secondary" data-i18n="hero_learn">了解更多</a>
+        </div>
+        <div class="hero-countdown" id="countdown">
+          <div class="countdown-item">
+            <div class="countdown-num" id="cd-days">--</div>
+            <div class="countdown-label" data-i18n="cd_days">天</div>
+          </div>
+          <div class="countdown-item">
+            <div class="countdown-num" id="cd-hours">--</div>
+            <div class="countdown-label" data-i18n="cd_hours">時</div>
+          </div>
+          <div class="countdown-item">
+            <div class="countdown-num" id="cd-mins">--</div>
+            <div class="countdown-label" data-i18n="cd_mins">分</div>
+          </div>
+          <div class="countdown-item">
+            <div class="countdown-num" id="cd-secs">--</div>
+            <div class="countdown-label" data-i18n="cd_secs">秒</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-greeting" data-i18n="phone_greeting">午安</div>
+            <div class="phone-username" data-i18n="phone_username">Hi, 小語</div>
+            <div class="phone-avatar-row">
+              <div class="phone-avatar"></div>
+              <div class="phone-group">
+                <div class="phone-group-dot"></div>
+                <span data-i18n="phone_group">乾燥玫瑰 · Soft Autumn</span>
+              </div>
+            </div>
+            <div class="phone-card">
+              <div class="phone-card-title" data-i18n="phone_spectrum">光譜定位</div>
+              <div class="phone-spectrum-row">
+                <div class="phone-spectrum-label"><span data-i18n="phone_undertone">底色調</span><span>偏暖 38</span></div>
+                <div class="phone-spectrum-track"><div class="phone-spectrum-fill" style="width:38%;background:linear-gradient(90deg,#E8A87C,#D4B5B5)"></div></div>
+              </div>
+              <div class="phone-spectrum-row">
+                <div class="phone-spectrum-label"><span data-i18n="phone_value">明度</span><span>中間 52</span></div>
+                <div class="phone-spectrum-track"><div class="phone-spectrum-fill" style="width:52%;background:linear-gradient(90deg,#8B7355,#D4B5B5)"></div></div>
+              </div>
+              <div class="phone-spectrum-row">
+                <div class="phone-spectrum-label"><span data-i18n="phone_chroma">彩度</span><span>柔和 44</span></div>
+                <div class="phone-spectrum-track"><div class="phone-spectrum-fill" style="width:44%;background:linear-gradient(90deg,#B8A090,#D4B5B5)"></div></div>
+              </div>
+            </div>
+            <div class="phone-card">
+              <div class="phone-card-title" data-i18n="phone_lip_title">推薦口紅色</div>
+              <div class="phone-colors">
+                <div class="phone-color-dot" style="background:#B5485D"></div>
+                <div class="phone-color-dot" style="background:#C06060"></div>
+                <div class="phone-color-dot" style="background:#A85050"></div>
+                <div class="phone-color-dot" style="background:#D4756B"></div>
+                <div class="phone-color-dot" style="background:#B86B6B"></div>
+                <div class="phone-color-dot" style="background:#CC7878"></div>
+                <div class="phone-color-dot" style="background:#9C5555"></div>
+                <div class="phone-color-dot" style="background:#D08080"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<div class="badge">Coming Soon on the App Store</div>
-<p class="sub">iOS App &middot; Launching 2026</p>
+<!-- ==================== BLOCK 2 — WHAT IS ==================== -->
+<section class="what-is" id="features">
+  <div class="container">
+    <div class="section-badge"><div class="section-badge-dot"></div><span data-i18n="b2_badge">核心價值</span></div>
+    <div class="section-title" data-i18n="b2_title">不再買錯色號</div>
+    <p class="section-desc" data-i18n="b2_desc">ColorMe 結合 AI 膚色分析與色彩科學，為你打造一本專屬的美妝色彩百科。</p>
+    <div class="what-is-grid">
+      <div class="what-is-card fade-up">
+        <div class="what-is-icon" style="background:linear-gradient(135deg,#FEE2E2,#FECACA)">🎨</div>
+        <h3 data-i18n="b2_c1_title">AI 精準測色</h3>
+        <p data-i18n="b2_c1_desc">拍 3 張素顏照，Claude AI 從光線校正到膚色分析，輸出你的 7 維色彩光譜，分毫不差。</p>
+      </div>
+      <div class="what-is-card fade-up">
+        <div class="what-is-icon" style="background:linear-gradient(135deg,#E0E7FF,#C7D2FE)">💄</div>
+        <h3 data-i18n="b2_c2_title">商品即時匹配</h3>
+        <p data-i18n="b2_c2_desc">使用 CIEDE2000 色差公式，每件商品即時算出你的專屬匹配分數，直覺看懂適不適合。</p>
+      </div>
+      <div class="what-is-card fade-up">
+        <div class="what-is-icon" style="background:linear-gradient(135deg,#D1FAE5,#A7F3D0)">🧴</div>
+        <h3 data-i18n="b2_c3_title">膚質智慧護膚</h3>
+        <p data-i18n="b2_c3_desc">6 維度膚質雷達圖 + 成分分析，從數百款護膚品中，推薦最適合你膚質的產品組合。</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-<div class="footer">&copy; 2026 ColorMe. All rights reserved.</div>
+<!-- ==================== BLOCK 3 — AI ANALYSIS ==================== -->
+<section class="ai-analysis" id="analysis">
+  <div class="container">
+    <div class="section-badge"><div class="section-badge-dot"></div><span data-i18n="b3_badge">AI 色彩診斷</span></div>
+    <div class="section-title" data-i18n="b3_title">3 張照片，看見你的色彩 DNA</div>
+    <p class="section-desc" data-i18n="b3_desc">運用 Claude AI 的視覺分析能力，以光線校正技術精準判斷你的膚色維度。</p>
+    <div class="ai-analysis-grid">
+      <div class="ai-steps fade-up">
+        <div class="ai-step">
+          <div class="ai-step-num">1</div>
+          <div>
+            <h4 data-i18n="b3_s1_title">素顏自拍 3 張</h4>
+            <p data-i18n="b3_s1_desc">正面、側面、頸部 — 在自然光下拍攝，AI 會自動驗證照片品質</p>
+          </div>
+        </div>
+        <div class="ai-step">
+          <div class="ai-step-num">2</div>
+          <div>
+            <h4 data-i18n="b3_s2_title">AI 深度分析</h4>
+            <p data-i18n="b3_s2_desc">交叉比對 3 張照片，判定底色調、明度、彩度等 7 大維度，精度達 0-100 數值</p>
+          </div>
+        </div>
+        <div class="ai-step">
+          <div class="ai-step-num">3</div>
+          <div>
+            <h4 data-i18n="b3_s3_title">查表匹配推薦色</h4>
+            <p data-i18n="b3_s3_desc">85,690 種預建組合中精準定位，輸出口紅 8 色 + 眼影 5 色 + 粉底色號</p>
+          </div>
+        </div>
+        <div class="ai-step">
+          <div class="ai-step-num">4</div>
+          <div>
+            <h4 data-i18n="b3_s4_title">個人化美妝建議</h4>
+            <p data-i18n="b3_s4_desc">AI 依據你的膚色與五官，給出粉底手法、眼妝畫法、唇色方向等 7 段量身建議</p>
+          </div>
+        </div>
+      </div>
+      <div class="ai-visual fade-up">
+        <div class="ai-demo">
+          <div class="ai-demo-header">
+            <div class="ai-demo-icon">AI</div>
+            <div class="ai-demo-header-text">
+              <h4 data-i18n="b3_demo_title">你的色彩分析結果</h4>
+              <p data-i18n="b3_demo_sub">分析完成 · 7 維度光譜</p>
+            </div>
+          </div>
+          <div class="ai-demo-body">
+            <div class="ai-demo-dimensions">
+              <div class="ai-dim-row">
+                <div class="ai-dim-label"><span class="ai-dim-name" data-i18n="dim_undertone">底色調 Undertone</span><span class="ai-dim-value">38</span></div>
+                <div class="ai-dim-track"><div class="ai-dim-fill" style="width:38%;background:linear-gradient(90deg,#E8A87C,#C8A2C8)"></div></div>
+                <div class="ai-dim-ends"><span data-i18n="dim_warm">暖</span><span data-i18n="dim_cool">冷</span></div>
+              </div>
+              <div class="ai-dim-row">
+                <div class="ai-dim-label"><span class="ai-dim-name" data-i18n="dim_value">明度 Value</span><span class="ai-dim-value">52</span></div>
+                <div class="ai-dim-track"><div class="ai-dim-fill" style="width:52%;background:linear-gradient(90deg,#8B6F47,#E8D8C8)"></div></div>
+                <div class="ai-dim-ends"><span data-i18n="dim_deep">深</span><span data-i18n="dim_light">淺</span></div>
+              </div>
+              <div class="ai-dim-row">
+                <div class="ai-dim-label"><span class="ai-dim-name" data-i18n="dim_chroma">彩度 Chroma</span><span class="ai-dim-value">44</span></div>
+                <div class="ai-dim-track"><div class="ai-dim-fill" style="width:44%;background:linear-gradient(90deg,#B8A090,#D85A7F)"></div></div>
+                <div class="ai-dim-ends"><span data-i18n="dim_soft">柔和</span><span data-i18n="dim_vivid">清晰</span></div>
+              </div>
+              <div class="ai-dim-row">
+                <div class="ai-dim-label"><span class="ai-dim-name" data-i18n="dim_contrast">對比度 Contrast</span><span class="ai-dim-value" data-i18n="dim_mid">中</span></div>
+                <div class="ai-dim-track"><div class="ai-dim-fill" style="width:50%;background:var(--theme)"></div></div>
+                <div class="ai-dim-ends"><span data-i18n="dim_low">低</span><span data-i18n="dim_high">高</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- ==================== BLOCK 4 — 12 SEASON TYPES ==================== -->
+<section class="season-types" id="seasons">
+  <div class="container">
+    <div class="section-badge"><div class="section-badge-dot"></div><span data-i18n="b4_badge">12 季型</span></div>
+    <div class="section-title" data-i18n="b4_title">找到你的色彩身份</div>
+    <p class="section-desc" data-i18n="b4_desc">基於底色調、明度、彩度三大維度，你將被歸入 12 種獨特的色彩季型，每種都有專屬詩意名稱。</p>
+    <div class="season-grid">
+      <div class="season-card fade-up"><div class="season-bubble" style="background:linear-gradient(135deg,#F5C4B8,#F0B0A0)">🩷</div><div class="season-name" data-i18n="s_ls">櫻花初綻</div><div class="season-sub">Light Spring</div></div>
+      <div class="season-card fade-up"><div class="season-bubble" style="background:linear-gradient(135deg,#F5AA82,#E89870)">🍑</div><div class="season-name" data-i18n="s_bs">蜜桃烈陽</div><div class="season-sub">Bright Spring</div></div>
+      <div class="season-card fade-up"><div class="season-bubble" style="background:linear-gradient(135deg,#E8C87A,#D4B468)">🌼</div><div class="season-name" data-i18n="s_ts">金桂花語</div><div class="season-sub">True Spring</div></div>
+      <div class="season-card fade-up"><div class="season-bubble" style="background:linear-gradient(135deg,#A88080,#987070)">🌹</div><div class="season-name" data-i18n="s_sa">乾燥玫瑰</div><div class="season-sub">Soft Autumn</div></div>
+      <div class="season-card fade-up"><div class="season-bubble" style="background:linear-gradient(135deg,#B4323C,#9A2830)">❤️</div><div class="season-name" data-i18n="s_da">石榴烈焰</div><div class="season-sub">Dark Autumn</div></div>
+      <div class="season-card fade-up"><div class="season-bubble" style="background:linear-gradient(135deg,#B8860B,#A07508)">🍯</div><div class="season-name" data-i18n="s_ta">琥珀秘境</div><div class="season-sub">True Autumn</div></div>
+      <div class="season-card fade-up"><div class="season-bubble" style="background:linear-gradient(135deg,#B496AA,#A08698)">🌸</div><div class="season-name" data-i18n="s_lsu">月霧薔薇</div><div class="season-sub">Light Summer</div></div>
+      <div class="season-card fade-up"><div class="season-bubble" style="background:linear-gradient(135deg,#9682C8,#8470B8)">💜</div><div class="season-name" data-i18n="s_bsu">紫藤花漾</div><div class="season-sub">Bright Summer</div></div>
+      <div class="season-card fade-up"><div class="season-bubble" style="background:linear-gradient(135deg,#64AAE6,#5098D4)">🩵</div><div class="season-name" data-i18n="s_tsu">晴空如洗</div><div class="season-sub">True Summer</div></div>
+      <div class="season-card fade-up"><div class="season-bubble" style="background:linear-gradient(135deg,#6B7B9E,#5A6A8E)">💙</div><div class="season-name" data-i18n="s_sw">矢車菊語</div><div class="season-sub">Soft Winter</div></div>
+      <div class="season-card fade-up"><div class="season-bubble" style="background:linear-gradient(135deg,#7850A0,#664090)">🔮</div><div class="season-name" data-i18n="s_dw">紫晶夜雨</div><div class="season-sub">Dark Winter</div></div>
+      <div class="season-card fade-up"><div class="season-bubble" style="background:linear-gradient(135deg,#2E8B7A,#207A6A)">💎</div><div class="season-name" data-i18n="s_tw">翡翠秘境</div><div class="season-sub">True Winter</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== BLOCK 5 — MATCHING ==================== -->
+<section class="matching" id="matching">
+  <div class="container">
+    <div class="matching-grid">
+      <div class="matching-visual fade-up">
+        <div class="matching-cards">
+          <div class="match-card"><div class="match-card-img"><div class="match-card-img-bg"><div class="match-lipstick" style="background:#B5485D"></div></div><div class="match-score-badge high">96%</div></div><div class="match-card-info"><div class="match-card-brand">MAC</div><div class="match-card-name">Powder Kiss 輕吻</div><div class="match-card-hex"><div class="match-card-hex-dot" style="background:#B5485D"></div>#B5485D</div></div></div>
+          <div class="match-card"><div class="match-card-img"><div class="match-card-img-bg"><div class="match-lipstick" style="background:#C06060"></div></div><div class="match-score-badge high">92%</div></div><div class="match-card-info"><div class="match-card-brand">NARS</div><div class="match-card-name">Audacious</div><div class="match-card-hex"><div class="match-card-hex-dot" style="background:#C06060"></div>#C06060</div></div></div>
+          <div class="match-card"><div class="match-card-img"><div class="match-card-img-bg"><div class="match-lipstick" style="background:#D4756B"></div></div><div class="match-score-badge high">89%</div></div><div class="match-card-info"><div class="match-card-brand">YSL</div><div class="match-card-name">Rouge Pur Couture</div><div class="match-card-hex"><div class="match-card-hex-dot" style="background:#D4756B"></div>#D4756B</div></div></div>
+          <div class="match-card"><div class="match-card-img"><div class="match-card-img-bg"><div class="match-lipstick" style="background:#A07050"></div></div><div class="match-score-badge mid">74%</div></div><div class="match-card-info"><div class="match-card-brand">Dior</div><div class="match-card-name">Rouge Dior</div><div class="match-card-hex"><div class="match-card-hex-dot" style="background:#A07050"></div>#A07050</div></div></div>
+        </div>
+      </div>
+      <div class="fade-up">
+        <div class="section-badge"><div class="section-badge-dot"></div><span data-i18n="b5_badge">智慧匹配</span></div>
+        <div class="section-title" data-i18n="b5_title_html">每件商品都有<br>你的專屬分數</div>
+        <p class="section-desc" data-i18n="b5_desc">使用國際色彩科學標準 CIEDE2000 公式，即時計算你與每件商品的色差匹配度。</p>
+        <div class="matching-features">
+          <div class="matching-feat"><div class="matching-feat-icon" style="background:#E8F5E9">🎯</div><div><h4 data-i18n="b5_f1_title">分品類精準比對</h4><p data-i18n="b5_f1_desc">口紅對口紅推薦色、眼影對眼影推薦色，分類比對更精準</p></div></div>
+          <div class="matching-feat"><div class="matching-feat-icon" style="background:#FFF3E0">⚡</div><div><h4 data-i18n="b5_f2_title">即時運算</h4><p data-i18n="b5_f2_desc">分數不存資料庫，每次瀏覽即時計算，新商品上架秒級生效</p></div></div>
+          <div class="matching-feat"><div class="matching-feat-icon" style="background:#F3E5F5">🏷️</div><div><h4 data-i18n="b5_f3_title">三級直覺色標</h4><p data-i18n="b5_f3_desc">85% 以上綠色、65-84% 橘色、其餘灰色 — 一眼看懂</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== BLOCK 6 — SKINCARE ==================== -->
+<section class="skincare" id="skincare">
+  <div class="container">
+    <div class="skincare-grid">
+      <div class="fade-up">
+        <div class="section-badge"><div class="section-badge-dot"></div><span data-i18n="b6_badge">護膚系統</span></div>
+        <div class="section-title" data-i18n="b6_title_html">不只看膚色<br>更懂你的膚質</div>
+        <p class="section-desc" data-i18n="b6_desc">AI 拍照分析 + 8 題互動問卷，建立你的 6 維膚質向量，從成分層面匹配最適合的護膚品。</p>
+        <div class="skincare-dims">
+          <div class="skincare-dim"><div class="skincare-dim-name" data-i18n="sk_oil">油脂分泌</div><div class="skincare-dim-bar"><div class="skincare-dim-fill" style="width:65%"></div></div></div>
+          <div class="skincare-dim"><div class="skincare-dim-name" data-i18n="sk_sens">敏感程度</div><div class="skincare-dim-bar"><div class="skincare-dim-fill" style="width:40%"></div></div></div>
+          <div class="skincare-dim"><div class="skincare-dim-name" data-i18n="sk_pig">色素沉澱</div><div class="skincare-dim-bar"><div class="skincare-dim-fill" style="width:30%"></div></div></div>
+          <div class="skincare-dim"><div class="skincare-dim-name" data-i18n="sk_age">皺紋/老化</div><div class="skincare-dim-bar"><div class="skincare-dim-fill" style="width:20%"></div></div></div>
+          <div class="skincare-dim"><div class="skincare-dim-name" data-i18n="sk_hyd">含水量</div><div class="skincare-dim-bar"><div class="skincare-dim-fill" style="width:55%"></div></div></div>
+          <div class="skincare-dim"><div class="skincare-dim-name" data-i18n="sk_acne">痘痘/毛孔</div><div class="skincare-dim-bar"><div class="skincare-dim-fill" style="width:45%"></div></div></div>
+        </div>
+      </div>
+      <div class="fade-up" style="display:flex;justify-content:center">
+        <svg class="radar-svg" viewBox="0 0 300 300" width="300" height="300">
+          <g opacity="0.15" stroke="var(--theme)" fill="none" stroke-width="1">
+            <polygon points="150,30 243,90 243,210 150,270 57,210 57,90"/>
+            <polygon points="150,60 222,105 222,195 150,240 78,195 78,105"/>
+            <polygon points="150,90 201,120 201,180 150,210 99,180 99,120"/>
+            <polygon points="150,120 180,135 180,165 150,180 120,165 120,135"/>
+          </g>
+          <g stroke="var(--theme)" stroke-width="0.5" opacity="0.2">
+            <line x1="150" y1="150" x2="150" y2="30"/><line x1="150" y1="150" x2="243" y2="90"/>
+            <line x1="150" y1="150" x2="243" y2="210"/><line x1="150" y1="150" x2="150" y2="270"/>
+            <line x1="150" y1="150" x2="57" y2="210"/><line x1="150" y1="150" x2="57" y2="90"/>
+          </g>
+          <polygon points="150,52 228,108 220,198 150,235 80,190 72,100" fill="rgba(168,128,128,0.15)" stroke="var(--theme)" stroke-width="2"/>
+          <g fill="var(--theme)">
+            <circle cx="150" cy="52" r="4"/><circle cx="228" cy="108" r="4"/><circle cx="220" cy="198" r="4"/>
+            <circle cx="150" cy="235" r="4"/><circle cx="80" cy="190" r="4"/><circle cx="72" cy="100" r="4"/>
+          </g>
+          <g font-size="12" font-weight="600" fill="var(--text2)" text-anchor="middle" font-family="'Noto Sans TC',sans-serif">
+            <text x="150" y="20" data-i18n="r_oil">油脂</text>
+            <text x="258" y="90" data-i18n="r_sens">敏感</text>
+            <text x="258" y="218" data-i18n="r_pig">色素</text>
+            <text x="150" y="290" data-i18n="r_age">老化</text>
+            <text x="42" y="218" data-i18n="r_hyd">含水</text>
+            <text x="42" y="90" data-i18n="r_acne">痘痘</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== BLOCK 7 — ENCYCLOPEDIA ==================== -->
+<section class="encyclopedia">
+  <div class="container">
+    <div class="section-badge"><div class="section-badge-dot"></div><span data-i18n="b7_badge">美妝百科圖鑑</span></div>
+    <div class="section-title" data-i18n="b7_title">你的專屬美妝百科</div>
+    <p class="section-desc" data-i18n="b7_desc">瀏覽數千件美妝與護膚商品，每件都有你的個人化匹配分數。</p>
+    <div class="encyclopedia-features">
+      <div class="ency-card fade-up"><div class="ency-card-icon">🔍</div><h3 data-i18n="b7_c1_title">智慧篩選</h3><p data-i18n="b7_c1_desc">依品類、品牌多重篩選，支援色號、產品名、描述性詞彙搜尋。</p><span class="ency-card-tag" data-i18n="b7_c1_tag">唇膏 · 眼影 · 腮紅 · 粉底</span></div>
+      <div class="ency-card fade-up"><div class="ency-card-icon">📊</div><h3 data-i18n="b7_c2_title">5:3:2 推薦算法</h3><p data-i18n="b7_c2_desc">每 10 張卡片 = 5 張為你推薦 + 3 張探索新風格 + 2 張熱門趨勢，平衡精準與驚喜。</p><span class="ency-card-tag" data-i18n="b7_c2_tag">個人化 Feed</span></div>
+      <div class="ency-card fade-up"><div class="ency-card-icon">💝</div><h3 data-i18n="b7_c3_title">收藏 & 資料夾</h3><p data-i18n="b7_c3_desc">一鍵收藏喜歡的商品，自建 emoji 資料夾分類管理，支援批量選取與移動。</p><span class="ency-card-tag" data-i18n="b7_c3_tag">☀️ 日常必備 · 🌹 約會妝容</span></div>
+      <div class="ency-card fade-up"><div class="ency-card-icon">🧬</div><h3 data-i18n="b7_c4_title">成分解析</h3><p data-i18n="b7_c4_desc">護膚品基於 INCI 成分自動計算功效向量，搭配致痘性和刺激性評級，選得安心。</p><span class="ency-card-tag" data-i18n="b7_c4_tag">150+ 成分資料庫</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== BLOCK 8 — SOCIAL ==================== -->
+<section class="social">
+  <div class="container">
+    <div class="social-grid">
+      <div class="fade-up">
+        <div class="section-badge"><div class="section-badge-dot"></div><span data-i18n="b8_badge">社群</span></div>
+        <div class="section-title" data-i18n="b8_title_html">和閨蜜一起<br>發現美麗</div>
+        <p class="section-desc" data-i18n="b8_desc">加好友、聊美妝、分享好物 — ColorMe 讓變美這件事更有趣。</p>
+        <div class="social-features">
+          <div class="social-feat"><div class="social-feat-icon" style="background:var(--theme-pale)">💬</div><div><h4 data-i18n="b8_f1_title">即時聊天</h4><p data-i18n="b8_f1_desc">和好友討論色號，直接在聊天室分享商品卡片，一鍵查看匹配分數</p></div></div>
+          <div class="social-feat"><div class="social-feat-icon" style="background:#E8F5E9">👥</div><div><h4 data-i18n="b8_f2_title">色群社群</h4><p data-i18n="b8_f2_desc">「328 人同屬乾燥玫瑰」— 發現同色群的熱門收藏和趨勢</p></div></div>
+          <div class="social-feat"><div class="social-feat-icon" style="background:#FFF3E0">🎴</div><div><h4 data-i18n="b8_f3_title">IG 風格個人牆</h4><p data-i18n="b8_f3_desc">漸層九宮格展示你的美妝日記，僅好友可見，隱私安心</p></div></div>
+        </div>
+      </div>
+      <div class="fade-up">
+        <div class="social-chat-demo">
+          <div class="chat-header">
+            <div class="chat-avatar" style="background:linear-gradient(135deg,#B496AA,#9682C8)"></div>
+            <div><div class="chat-name" data-i18n="chat_name">小安</div><div class="chat-status" data-i18n="chat_status">在線上</div></div>
+          </div>
+          <div class="chat-messages">
+            <div class="chat-msg received" data-i18n="chat_m1">欸你看這個色號！超美的</div>
+            <div class="chat-product-card">
+              <div class="chat-product-swatch" style="background:#B5485D; border-radius:10px;"></div>
+              <div class="chat-product-info"><div class="chat-product-name">MAC Powder Kiss #316</div><div class="chat-product-score" data-i18n="chat_score">匹配 96%</div></div>
+            </div>
+            <div class="chat-msg sent" data-i18n="chat_m2">天啊 96 分也太適合我！</div>
+            <div class="chat-msg received" data-i18n="chat_m3">就說嘛 乾燥玫瑰色系都好適合你 🌹</div>
+            <div class="chat-msg sent" data-i18n="chat_m4">馬上加收藏 💕</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== BLOCK 9 — PRIVACY ==================== -->
+<section class="privacy-section">
+  <div class="container">
+    <div class="section-badge" style="background:rgba(255,255,255,0.08)"><div class="section-badge-dot" style="background:var(--theme-light)"></div><span style="color:var(--theme-light)" data-i18n="b9_badge">安全與免費</span></div>
+    <div class="section-title" style="color:var(--white)" data-i18n="b9_title">完全免費，安心使用</div>
+    <p class="section-desc" style="color:rgba(255,255,255,0.5)" data-i18n="b9_desc">所有功能完全免費開放，你的照片和數據安全受到最高規格保護。</p>
+    <div class="privacy-grid">
+      <div class="privacy-card fade-up"><div class="privacy-card-icon">🆓</div><h3 data-i18n="b9_c1_title">功能全開放</h3><p data-i18n="b9_c1_desc">AI 分析、完整報告、匹配分數、推薦色 — 沒有付費牆，沒有解鎖機制，全部免費。</p></div>
+      <div class="privacy-card fade-up"><div class="privacy-card-icon">🔒</div><h3 data-i18n="b9_c2_title">照片不上傳</h3><p data-i18n="b9_c2_desc">分析完即刪除，你的素顏照不會被儲存在任何伺服器，隱私從源頭保護。</p></div>
+      <div class="privacy-card fade-up"><div class="privacy-card-icon">🛡️</div><h3 data-i18n="b9_c3_title">數據加密</h3><p data-i18n="b9_c3_desc">所有個人數據經過端對端加密傳輸，日記照採 Signed URL 限時讀取，只有好友能看。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== BLOCK 10 — CTA ==================== -->
+<section class="final-cta" id="download">
+  <div class="container">
+    <div class="cta-date">
+      <span class="cta-date-dot"></span>
+      <span data-i18n="cta_date">2026 年 5 月 1 日正式上線</span>
+    </div>
+    <div class="section-title" data-i18n="cta_title_html">準備好找到你的<br>專屬顏色了嗎？</div>
+    <p class="section-desc" data-i18n="cta_desc">免費下載 ColorMe，用 AI 發現最適合你的色彩。上線首日下載，搶先體驗完整功能。</p>
+    <div class="cta-stores">
+      <a href="#" class="store-badge">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        <span data-i18n="cta_appstore">App Store 下載</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Color<span>Me</span></div>
+      <div class="footer-links">
+        <a href="#" data-i18n="ft_privacy">隱私政策</a>
+        <a href="#" data-i18n="ft_terms">服務條款</a>
+        <a href="#" data-i18n="ft_contact">聯絡我們</a>
+      </div>
+    </div>
+    <div class="footer-copy">&copy; 2026 ColorMe. All rights reserved.</div>
+  </div>
+</footer>
+
+<!-- ==================== SCRIPTS ==================== -->
+<script>
+// ===== Translations =====
+const T = {
+'zh-TW': {
+  nav_features:'功能', nav_analysis:'AI 分析', nav_seasons:'色彩類型', nav_skincare:'護膚', nav_download:'立即下載',
+  hero_eyebrow:'2026 年 5 月 1 日正式上線',
+  hero_title_html:'找到最適合<br>你的<em>顏色</em>',
+  hero_subtitle:'拍 3 張素顏照，AI 精準分析你的膚色光譜，從數千件美妝商品中，找出最適合你的色號。',
+  hero_cta:'預約下載', hero_learn:'了解更多',
+  cd_days:'天', cd_hours:'時', cd_mins:'分', cd_secs:'秒',
+  phone_greeting:'午安', phone_username:'Hi, 小語', phone_group:'乾燥玫瑰 · Soft Autumn',
+  phone_spectrum:'光譜定位', phone_undertone:'底色調', phone_value:'明度', phone_chroma:'彩度', phone_lip_title:'推薦口紅色',
+  b2_badge:'核心價值', b2_title:'不再買錯色號', b2_desc:'ColorMe 結合 AI 膚色分析與色彩科學，為你打造一本專屬的美妝色彩百科。',
+  b2_c1_title:'AI 精準測色', b2_c1_desc:'拍 3 張素顏照，Claude AI 從光線校正到膚色分析，輸出你的 7 維色彩光譜，分毫不差。',
+  b2_c2_title:'商品即時匹配', b2_c2_desc:'使用 CIEDE2000 色差公式，每件商品即時算出你的專屬匹配分數，直覺看懂適不適合。',
+  b2_c3_title:'膚質智慧護膚', b2_c3_desc:'6 維度膚質雷達圖 + 成分分析，從數百款護膚品中，推薦最適合你膚質的產品組合。',
+  b3_badge:'AI 色彩診斷', b3_title:'3 張照片，看見你的色彩 DNA', b3_desc:'運用 Claude AI 的視覺分析能力，以光線校正技術精準判斷你的膚色維度。',
+  b3_s1_title:'素顏自拍 3 張', b3_s1_desc:'正面、側面、頸部 — 在自然光下拍攝，AI 會自動驗證照片品質',
+  b3_s2_title:'AI 深度分析', b3_s2_desc:'交叉比對 3 張照片，判定底色調、明度、彩度等 7 大維度，精度達 0-100 數值',
+  b3_s3_title:'查表匹配推薦色', b3_s3_desc:'85,690 種預建組合中精準定位，輸出口紅 8 色 + 眼影 5 色 + 粉底色號',
+  b3_s4_title:'個人化美妝建議', b3_s4_desc:'AI 依據你的膚色與五官，給出粉底手法、眼妝畫法、唇色方向等 7 段量身建議',
+  b3_demo_title:'你的色彩分析結果', b3_demo_sub:'分析完成 · 7 維度光譜',
+  dim_undertone:'底色調 Undertone', dim_value:'明度 Value', dim_chroma:'彩度 Chroma', dim_contrast:'對比度 Contrast',
+  dim_warm:'暖', dim_cool:'冷', dim_deep:'深', dim_light:'淺', dim_soft:'柔和', dim_vivid:'清晰', dim_mid:'中', dim_low:'低', dim_high:'高',
+  b4_badge:'12 季型', b4_title:'找到你的色彩身份', b4_desc:'基於底色調、明度、彩度三大維度，你將被歸入 12 種獨特的色彩季型，每種都有專屬詩意名稱。',
+  s_ls:'櫻花初綻', s_bs:'蜜桃烈陽', s_ts:'金桂花語', s_sa:'乾燥玫瑰', s_da:'石榴烈焰', s_ta:'琥珀秘境',
+  s_lsu:'月霧薔薇', s_bsu:'紫藤花漾', s_tsu:'晴空如洗', s_sw:'矢車菊語', s_dw:'紫晶夜雨', s_tw:'翡翠秘境',
+  b5_badge:'智慧匹配', b5_title_html:'每件商品都有<br>你的專屬分數', b5_desc:'使用國際色彩科學標準 CIEDE2000 公式，即時計算你與每件商品的色差匹配度。',
+  b5_f1_title:'分品類精準比對', b5_f1_desc:'口紅對口紅推薦色、眼影對眼影推薦色，分類比對更精準',
+  b5_f2_title:'即時運算', b5_f2_desc:'分數不存資料庫，每次瀏覽即時計算，新商品上架秒級生效',
+  b5_f3_title:'三級直覺色標', b5_f3_desc:'85% 以上綠色、65-84% 橘色、其餘灰色 — 一眼看懂',
+  b6_badge:'護膚系統', b6_title_html:'不只看膚色<br>更懂你的膚質', b6_desc:'AI 拍照分析 + 8 題互動問卷，建立你的 6 維膚質向量，從成分層面匹配最適合的護膚品。',
+  sk_oil:'油脂分泌', sk_sens:'敏感程度', sk_pig:'色素沉澱', sk_age:'皺紋/老化', sk_hyd:'含水量', sk_acne:'痘痘/毛孔',
+  r_oil:'油脂', r_sens:'敏感', r_pig:'色素', r_age:'老化', r_hyd:'含水', r_acne:'痘痘',
+  b7_badge:'美妝百科圖鑑', b7_title:'你的專屬美妝百科', b7_desc:'瀏覽數千件美妝與護膚商品，每件都有你的個人化匹配分數。',
+  b7_c1_title:'智慧篩選', b7_c1_desc:'依品類、品牌多重篩選，支援色號、產品名、描述性詞彙搜尋。', b7_c1_tag:'唇膏 · 眼影 · 腮紅 · 粉底',
+  b7_c2_title:'5:3:2 推薦算法', b7_c2_desc:'每 10 張卡片 = 5 張為你推薦 + 3 張探索新風格 + 2 張熱門趨勢，平衡精準與驚喜。', b7_c2_tag:'個人化 Feed',
+  b7_c3_title:'收藏 & 資料夾', b7_c3_desc:'一鍵收藏喜歡的商品，自建 emoji 資料夾分類管理，支援批量選取與移動。', b7_c3_tag:'☀️ 日常必備 · 🌹 約會妝容',
+  b7_c4_title:'成分解析', b7_c4_desc:'護膚品基於 INCI 成分自動計算功效向量，搭配致痘性和刺激性評級，選得安心。', b7_c4_tag:'150+ 成分資料庫',
+  b8_badge:'社群', b8_title_html:'和閨蜜一起<br>發現美麗', b8_desc:'加好友、聊美妝、分享好物 — ColorMe 讓變美這件事更有趣。',
+  b8_f1_title:'即時聊天', b8_f1_desc:'和好友討論色號，直接在聊天室分享商品卡片，一鍵查看匹配分數',
+  b8_f2_title:'色群社群', b8_f2_desc:'「328 人同屬乾燥玫瑰」— 發現同色群的熱門收藏和趨勢',
+  b8_f3_title:'IG 風格個人牆', b8_f3_desc:'漸層九宮格展示你的美妝日記，僅好友可見，隱私安心',
+  chat_name:'小安', chat_status:'在線上', chat_m1:'欸你看這個色號！超美的', chat_score:'匹配 96%',
+  chat_m2:'天啊 96 分也太適合我！', chat_m3:'就說嘛 乾燥玫瑰色系都好適合你 🌹', chat_m4:'馬上加收藏 💕',
+  b9_badge:'安全與免費', b9_title:'完全免費，安心使用', b9_desc:'所有功能完全免費開放，你的照片和數據安全受到最高規格保護。',
+  b9_c1_title:'功能全開放', b9_c1_desc:'AI 分析、完整報告、匹配分數、推薦色 — 沒有付費牆，沒有解鎖機制，全部免費。',
+  b9_c2_title:'照片不上傳', b9_c2_desc:'分析完即刪除，你的素顏照不會被儲存在任何伺服器，隱私從源頭保護。',
+  b9_c3_title:'數據加密', b9_c3_desc:'所有個人數據經過端對端加密傳輸，日記照採 Signed URL 限時讀取，只有好友能看。',
+  cta_date:'2026 年 5 月 1 日正式上線', cta_title_html:'準備好找到你的<br>專屬顏色了嗎？',
+  cta_desc:'免費下載 ColorMe，用 AI 發現最適合你的色彩。上線首日下載，搶先體驗完整功能。', cta_appstore:'App Store 下載',
+  ft_privacy:'隱私政策', ft_terms:'服務條款', ft_contact:'聯絡我們'
+},
+'en': {
+  nav_features:'Features', nav_analysis:'AI Analysis', nav_seasons:'Color Types', nav_skincare:'Skincare', nav_download:'Download',
+  hero_eyebrow:'Launching May 1, 2026',
+  hero_title_html:'Find Your<br>Perfect <em>Color</em>',
+  hero_subtitle:'Take 3 bare-face photos — AI precisely analyzes your skin tone spectrum and finds your ideal shades from thousands of beauty products.',
+  hero_cta:'Pre-order', hero_learn:'Learn More',
+  cd_days:'Days', cd_hours:'Hrs', cd_mins:'Min', cd_secs:'Sec',
+  phone_greeting:'Good afternoon', phone_username:'Hi, Yuki', phone_group:'Dried Rose · Soft Autumn',
+  phone_spectrum:'Spectrum', phone_undertone:'Undertone', phone_value:'Value', phone_chroma:'Chroma', phone_lip_title:'Recommended Lip Colors',
+  b2_badge:'Core Value', b2_title:'Never Buy the Wrong Shade Again', b2_desc:'ColorMe combines AI skin tone analysis with color science to create your personal beauty color encyclopedia.',
+  b2_c1_title:'AI Precision Color', b2_c1_desc:'Take 3 bare-face photos — Claude AI performs light correction and skin analysis, outputting your 7-dimension color spectrum.',
+  b2_c2_title:'Real-time Matching', b2_c2_desc:'Using the CIEDE2000 color difference formula, every product gets an instant personal match score — intuitive at a glance.',
+  b2_c3_title:'Smart Skincare', b2_c3_desc:'6-dimension skin radar chart + ingredient analysis to recommend the best skincare products for your skin type.',
+  b3_badge:'AI Color Diagnosis', b3_title:'3 Photos, Discover Your Color DNA', b3_desc:'Leveraging Claude AI\'s visual analysis with light correction technology to precisely determine your skin tone dimensions.',
+  b3_s1_title:'Take 3 Bare-face Selfies', b3_s1_desc:'Front, side, and neck — shot in natural light. AI automatically verifies photo quality.',
+  b3_s2_title:'AI Deep Analysis', b3_s2_desc:'Cross-referencing 3 photos to determine undertone, value, chroma and 4 more dimensions with 0-100 precision.',
+  b3_s3_title:'Lookup Table Matching', b3_s3_desc:'Pinpoint match from 85,690 pre-built combinations — output 8 lip + 5 eye + foundation shades.',
+  b3_s4_title:'Personalized Beauty Tips', b3_s4_desc:'AI provides 7 tailored tips on foundation technique, eye makeup, lip color direction based on your features.',
+  b3_demo_title:'Your Color Analysis Result', b3_demo_sub:'Complete · 7-dimension spectrum',
+  dim_undertone:'Undertone', dim_value:'Value', dim_chroma:'Chroma', dim_contrast:'Contrast',
+  dim_warm:'Warm', dim_cool:'Cool', dim_deep:'Deep', dim_light:'Light', dim_soft:'Soft', dim_vivid:'Vivid', dim_mid:'Mid', dim_low:'Low', dim_high:'High',
+  b4_badge:'12 Seasons', b4_title:'Find Your Color Identity', b4_desc:'Based on undertone, value, and chroma — you\'ll be classified into one of 12 unique seasonal color types, each with a poetic name.',
+  s_ls:'Cherry Blossom', s_bs:'Peach Sun', s_ts:'Golden Osmanthus', s_sa:'Dried Rose', s_da:'Pomegranate Flame', s_ta:'Amber Secret',
+  s_lsu:'Moonlit Rose', s_bsu:'Wisteria Bloom', s_tsu:'Clear Sky', s_sw:'Cornflower', s_dw:'Amethyst Rain', s_tw:'Jade Realm',
+  b5_badge:'Smart Matching', b5_title_html:'Every Product Has<br>Your Personal Score', b5_desc:'Using the international CIEDE2000 color science standard to calculate your color match with every product in real-time.',
+  b5_f1_title:'Category-specific Matching', b5_f1_desc:'Lipstick matches lip colors, eyeshadow matches eye colors — category-based for better accuracy.',
+  b5_f2_title:'Real-time Calculation', b5_f2_desc:'Scores aren\'t stored — they\'re calculated live on every browse. New products work instantly.',
+  b5_f3_title:'3-tier Color Coding', b5_f3_desc:'85%+ green, 65-84% orange, rest gray — understand at a glance.',
+  b6_badge:'Skincare System', b6_title_html:'Beyond Skin Color,<br>Understanding Your Skin', b6_desc:'AI photo analysis + 8-question interactive quiz builds your 6-dimension skin vector for ingredient-level product matching.',
+  sk_oil:'Oiliness', sk_sens:'Sensitivity', sk_pig:'Pigmentation', sk_age:'Aging', sk_hyd:'Hydration', sk_acne:'Acne / Pores',
+  r_oil:'Oil', r_sens:'Sensitive', r_pig:'Pigment', r_age:'Aging', r_hyd:'Hydration', r_acne:'Acne',
+  b7_badge:'Beauty Encyclopedia', b7_title:'Your Personal Beauty Encyclopedia', b7_desc:'Browse thousands of beauty and skincare products, each with your personalized match score.',
+  b7_c1_title:'Smart Filters', b7_c1_desc:'Multi-filter by category and brand. Search by shade, product name, or descriptive keywords.', b7_c1_tag:'Lipstick · Eyeshadow · Blush · Foundation',
+  b7_c2_title:'5:3:2 Algorithm', b7_c2_desc:'Every 10 cards = 5 for you + 3 explore new styles + 2 trending — balancing precision and discovery.', b7_c2_tag:'Personalized Feed',
+  b7_c3_title:'Favorites & Folders', b7_c3_desc:'One-tap save, custom emoji folders, batch select and move — organize your beauty collection.', b7_c3_tag:'☀️ Daily Essentials · 🌹 Date Night',
+  b7_c4_title:'Ingredient Analysis', b7_c4_desc:'Auto-calculated efficacy vectors from INCI ingredients, with comedogenicity and irritancy ratings.', b7_c4_tag:'150+ Ingredient Database',
+  b8_badge:'Community', b8_title_html:'Discover Beauty<br>With Your Besties', b8_desc:'Add friends, chat about makeup, share favorites — ColorMe makes beauty more fun.',
+  b8_f1_title:'Instant Chat', b8_f1_desc:'Discuss shades with friends, share product cards directly in chat with match scores.',
+  b8_f2_title:'Color Community', b8_f2_desc:'"328 people share Dried Rose" — discover popular picks from your color group.',
+  b8_f3_title:'IG-style Profile', b8_f3_desc:'Gradient grid showcasing your beauty diary — friends-only for privacy.',
+  chat_name:'Annie', chat_status:'Online', chat_m1:'Check out this shade! So gorgeous', chat_score:'Match 96%',
+  chat_m2:'OMG 96% is perfect for me!', chat_m3:'Told you! Dried Rose shades suit you so well 🌹', chat_m4:'Adding to favorites now 💕',
+  b9_badge:'Safe & Free', b9_title:'Completely Free, Worry-free', b9_desc:'All features fully free. Your photos and data are protected with the highest security standards.',
+  b9_c1_title:'All Features Unlocked', b9_c1_desc:'AI analysis, full reports, match scores, recommended colors — no paywall, no unlock mechanism, everything free.',
+  b9_c2_title:'Photos Never Stored', b9_c2_desc:'Deleted after analysis. Your bare-face photos are never stored on any server — privacy from the source.',
+  b9_c3_title:'Encrypted Data', b9_c3_desc:'All personal data encrypted in transit. Diary photos use time-limited Signed URLs — friends-only access.',
+  cta_date:'Launching May 1, 2026', cta_title_html:'Ready to Find<br>Your Perfect Color?',
+  cta_desc:'Download ColorMe for free — discover your ideal colors with AI. Download on launch day for the full experience.', cta_appstore:'App Store Download',
+  ft_privacy:'Privacy Policy', ft_terms:'Terms of Service', ft_contact:'Contact Us'
+},
+'ja': {
+  nav_features:'機能', nav_analysis:'AI分析', nav_seasons:'カラータイプ', nav_skincare:'スキンケア', nav_download:'ダウンロード',
+  hero_eyebrow:'2026年5月1日リリース',
+  hero_title_html:'あなたに最も似合う<br><em>カラー</em>を見つけよう',
+  hero_subtitle:'すっぴん写真3枚を撮影するだけ。AIが肌色スペクトルを精密に分析し、数千点のコスメからベストマッチを見つけます。',
+  hero_cta:'事前予約', hero_learn:'詳しく見る',
+  cd_days:'日', cd_hours:'時', cd_mins:'分', cd_secs:'秒',
+  phone_greeting:'こんにちは', phone_username:'Hi, ユキ', phone_group:'ドライローズ · Soft Autumn',
+  phone_spectrum:'スペクトル', phone_undertone:'ベーストーン', phone_value:'明度', phone_chroma:'彩度', phone_lip_title:'おすすめリップカラー',
+  b2_badge:'コアバリュー', b2_title:'もう色選びで失敗しない', b2_desc:'ColorMeはAI肌色分析とカラーサイエンスを融合し、あなた専用のビューティーカラー百科を作ります。',
+  b2_c1_title:'AI精密カラー診断', b2_c1_desc:'すっぴん写真3枚で、Claude AIが光補正から肌色分析まで行い、7次元カラースペクトルを出力。',
+  b2_c2_title:'リアルタイムマッチング', b2_c2_desc:'CIEDE2000色差公式により、各商品のパーソナルマッチスコアを瞬時に算出。',
+  b2_c3_title:'スマートスキンケア', b2_c3_desc:'6次元肌質レーダーチャート＋成分分析で、肌タイプに最適なスキンケア商品を推薦。',
+  b3_badge:'AIカラー診断', b3_title:'3枚の写真で、あなたのカラーDNAを発見', b3_desc:'Claude AIの視覚分析能力と光補正技術で、肌色の各次元を精密に判定します。',
+  b3_s1_title:'すっぴんセルフィー3枚', b3_s1_desc:'正面・側面・首 — 自然光で撮影。AIが自動で写真品質を検証します。',
+  b3_s2_title:'AIディープ分析', b3_s2_desc:'3枚の写真を照合し、ベーストーン・明度・彩度など7大次元を0-100で判定。',
+  b3_s3_title:'ルックアップテーブル照合', b3_s3_desc:'85,690種の事前構築組み合わせから精密にマッチ。リップ8色+アイシャドウ5色+ファンデーションを出力。',
+  b3_s4_title:'パーソナル美容アドバイス', b3_s4_desc:'AIが肌色と顔立ちに基づき、ファンデ・アイメイク・リップカラーなど7つのアドバイスを提供。',
+  b3_demo_title:'あなたのカラー分析結果', b3_demo_sub:'分析完了 · 7次元スペクトル',
+  dim_undertone:'ベーストーン', dim_value:'明度 Value', dim_chroma:'彩度 Chroma', dim_contrast:'コントラスト',
+  dim_warm:'ウォーム', dim_cool:'クール', dim_deep:'ディープ', dim_light:'ライト', dim_soft:'ソフト', dim_vivid:'ビビッド', dim_mid:'ミドル', dim_low:'ロー', dim_high:'ハイ',
+  b4_badge:'12シーズン', b4_title:'あなたのカラーアイデンティティを見つけよう', b4_desc:'ベーストーン・明度・彩度の3次元に基づき、12種のユニークな季節カラータイプに分類。それぞれに詩的な名前があります。',
+  s_ls:'桜の蕾', s_bs:'蜜桃の太陽', s_ts:'金木犀', s_sa:'ドライローズ', s_da:'石榴の炎', s_ta:'琥珀の秘境',
+  s_lsu:'月霧の薔薇', s_bsu:'藤の花', s_tsu:'晴天', s_sw:'矢車菊', s_dw:'紫水晶の雨', s_tw:'翡翠の秘境',
+  b5_badge:'スマートマッチ', b5_title_html:'すべての商品に<br>あなた専用のスコア', b5_desc:'国際カラーサイエンス標準CIEDE2000公式で、各商品との色差マッチ度をリアルタイム算出。',
+  b5_f1_title:'カテゴリ別精密照合', b5_f1_desc:'リップはリップ推奨色、アイシャドウはアイシャドウ推奨色と照合。カテゴリ別でより精密。',
+  b5_f2_title:'リアルタイム計算', b5_f2_desc:'スコアはDBに保存せず、閲覧のたびにリアルタイム計算。新商品も即反映。',
+  b5_f3_title:'3段階カラーコード', b5_f3_desc:'85%以上＝グリーン、65-84%＝オレンジ、それ以下＝グレー — 一目で分かる。',
+  b6_badge:'スキンケアシステム', b6_title_html:'肌色だけでなく<br>肌質も理解する', b6_desc:'AI写真分析＋8問インタラクティブ問診で6次元肌質ベクトルを構築。成分レベルで最適なスキンケアをマッチング。',
+  sk_oil:'皮脂分泌', sk_sens:'敏感度', sk_pig:'色素沈着', sk_age:'シワ/老化', sk_hyd:'水分量', sk_acne:'ニキビ/毛穴',
+  r_oil:'皮脂', r_sens:'敏感', r_pig:'色素', r_age:'老化', r_hyd:'水分', r_acne:'ニキビ',
+  b7_badge:'ビューティー百科', b7_title:'あなた専用のビューティー百科', b7_desc:'数千点のコスメ・スキンケア商品を閲覧。すべてにパーソナルマッチスコア付き。',
+  b7_c1_title:'スマートフィルター', b7_c1_desc:'カテゴリ・ブランドで多重絞り込み。色番・商品名・キーワード検索にも対応。', b7_c1_tag:'リップ · アイシャドウ · チーク · ファンデ',
+  b7_c2_title:'5:3:2 レコメンドアルゴリズム', b7_c2_desc:'10枚ごとに5枚おすすめ+3枚新スタイル+2枚トレンド — 精度と発見のバランス。', b7_c2_tag:'パーソナライズFeed',
+  b7_c3_title:'お気に入り＆フォルダ', b7_c3_desc:'ワンタップ保存、絵文字フォルダで分類管理、一括選択＆移動にも対応。', b7_c3_tag:'☀️ デイリー · 🌹 デート',
+  b7_c4_title:'成分分析', b7_c4_desc:'INCI成分から効能ベクトルを自動算出。コメド・刺激性評価付きで安心。', b7_c4_tag:'150+成分データベース',
+  b8_badge:'コミュニティ', b8_title_html:'親友と一緒に<br>美しさを発見しよう', b8_desc:'友達追加・コスメトーク・お気に入り共有 — ColorMeでキレイをもっと楽しく。',
+  b8_f1_title:'インスタントチャット', b8_f1_desc:'友達と色番を相談、チャットで商品カードを直接共有、マッチスコアもすぐ確認。',
+  b8_f2_title:'カラーコミュニティ', b8_f2_desc:'「328人がドライローズ」— 同じカラーグループの人気商品やトレンドを発見。',
+  b8_f3_title:'IG風プロフィール', b8_f3_desc:'グラデーショングリッドでビューティーダイアリーを展示。友達限定で安心。',
+  chat_name:'アンナ', chat_status:'オンライン', chat_m1:'この色番見て！めっちゃ可愛い', chat_score:'マッチ 96%',
+  chat_m2:'96%！私にぴったり！', chat_m3:'でしょ！ドライローズ系が超似合うよ 🌹', chat_m4:'お気に入りに追加する 💕',
+  b9_badge:'安全＆無料', b9_title:'完全無料、安心利用', b9_desc:'すべての機能が完全無料。写真とデータは最高水準のセキュリティで保護されます。',
+  b9_c1_title:'全機能開放', b9_c1_desc:'AI分析・完全レポート・マッチスコア・推奨カラー — ペイウォールなし、完全無料。',
+  b9_c2_title:'写真は保存しません', b9_c2_desc:'分析後すぐに削除。すっぴん写真はどのサーバーにも保存されません。',
+  b9_c3_title:'データ暗号化', b9_c3_desc:'すべての個人データはエンドツーエンド暗号化。ダイアリー写真は時限付きSigned URLで友達のみ閲覧可。',
+  cta_date:'2026年5月1日リリース', cta_title_html:'あなたの<br>パーフェクトカラーを<br>見つける準備はできた？',
+  cta_desc:'ColorMeを無料ダウンロード。AIであなたに最適なカラーを発見しよう。リリース初日にダウンロードして全機能を体験。', cta_appstore:'App Store ダウンロード',
+  ft_privacy:'プライバシーポリシー', ft_terms:'利用規約', ft_contact:'お問い合わせ'
+},
+'ko': {
+  nav_features:'기능', nav_analysis:'AI 분석', nav_seasons:'컬러 타입', nav_skincare:'스킨케어', nav_download:'다운로드',
+  hero_eyebrow:'2026년 5월 1일 출시',
+  hero_title_html:'나에게 가장 어울리는<br><em>컬러</em>를 찾아보세요',
+  hero_subtitle:'맨 얼굴 사진 3장으로 AI가 피부톤 스펙트럼을 정밀 분석하여, 수천 개의 뷰티 제품에서 나만의 베스트 컬러를 찾아줍니다.',
+  hero_cta:'사전 예약', hero_learn:'더 알아보기',
+  cd_days:'일', cd_hours:'시', cd_mins:'분', cd_secs:'초',
+  phone_greeting:'안녕하세요', phone_username:'Hi, 유키', phone_group:'드라이 로즈 · Soft Autumn',
+  phone_spectrum:'스펙트럼', phone_undertone:'베이스톤', phone_value:'명도', phone_chroma:'채도', phone_lip_title:'추천 립 컬러',
+  b2_badge:'핵심 가치', b2_title:'다시는 잘못된 컬러를 사지 마세요', b2_desc:'ColorMe는 AI 피부톤 분석과 컬러 사이언스를 결합하여 나만의 뷰티 컬러 백과사전을 만들어 줍니다.',
+  b2_c1_title:'AI 정밀 컬러 측정', b2_c1_desc:'맨 얼굴 사진 3장으로 Claude AI가 조명 보정부터 피부톤 분석까지, 7차원 컬러 스펙트럼을 출력합니다.',
+  b2_c2_title:'실시간 매칭', b2_c2_desc:'CIEDE2000 색차 공식으로 모든 제품의 개인 맞춤 매칭 점수를 즉시 계산합니다.',
+  b2_c3_title:'스마트 스킨케어', b2_c3_desc:'6차원 피부 레이더 차트 + 성분 분석으로 내 피부 타입에 가장 적합한 스킨케어 제품을 추천합니다.',
+  b3_badge:'AI 컬러 진단', b3_title:'사진 3장으로 나의 컬러 DNA를 발견하세요', b3_desc:'Claude AI의 시각 분석 능력과 조명 보정 기술로 피부톤 차원을 정밀하게 판단합니다.',
+  b3_s1_title:'맨 얼굴 셀카 3장', b3_s1_desc:'정면, 측면, 목 — 자연광에서 촬영하면 AI가 자동으로 사진 품질을 검증합니다.',
+  b3_s2_title:'AI 딥 분석', b3_s2_desc:'3장의 사진을 교차 비교하여 베이스톤, 명도, 채도 등 7가지 차원을 0-100으로 판정합니다.',
+  b3_s3_title:'룩업 테이블 매칭', b3_s3_desc:'85,690종의 사전 구축 조합에서 정밀 매칭 — 립 8색 + 아이섀도 5색 + 파운데이션을 출력합니다.',
+  b3_s4_title:'맞춤 뷰티 어드바이스', b3_s4_desc:'AI가 피부색과 이목구비에 맞춰 파운데이션, 아이메이크업, 립 컬러 등 7가지 맞춤 조언을 제공합니다.',
+  b3_demo_title:'나의 컬러 분석 결과', b3_demo_sub:'분석 완료 · 7차원 스펙트럼',
+  dim_undertone:'베이스톤 Undertone', dim_value:'명도 Value', dim_chroma:'채도 Chroma', dim_contrast:'대비도 Contrast',
+  dim_warm:'웜', dim_cool:'쿨', dim_deep:'딥', dim_light:'라이트', dim_soft:'소프트', dim_vivid:'비비드', dim_mid:'미드', dim_low:'로우', dim_high:'하이',
+  b4_badge:'12시즌', b4_title:'나만의 컬러 아이덴티티를 찾아보세요', b4_desc:'베이스톤, 명도, 채도 3가지 차원을 기반으로 12가지 고유한 시즌 컬러 타입 중 하나로 분류됩니다.',
+  s_ls:'벚꽃 봉오리', s_bs:'피치 선샤인', s_ts:'금목서', s_sa:'드라이 로즈', s_da:'석류 불꽃', s_ta:'앰버 시크릿',
+  s_lsu:'달빛 장미', s_bsu:'등나무 꽃', s_tsu:'맑은 하늘', s_sw:'수레국화', s_dw:'자수정 비', s_tw:'비취 왕국',
+  b5_badge:'스마트 매칭', b5_title_html:'모든 제품에<br>나만의 점수가 있어요', b5_desc:'국제 컬러 사이언스 표준 CIEDE2000 공식으로 모든 제품과의 색차 매칭도를 실시간 계산합니다.',
+  b5_f1_title:'카테고리별 정밀 매칭', b5_f1_desc:'립은 립 추천색, 아이섀도는 아이섀도 추천색과 매칭 — 카테고리별로 더 정확합니다.',
+  b5_f2_title:'실시간 계산', b5_f2_desc:'점수는 DB에 저장하지 않고 매번 실시간 계산합니다. 신제품도 즉시 반영됩니다.',
+  b5_f3_title:'3단계 컬러 코드', b5_f3_desc:'85% 이상 초록, 65-84% 주황, 나머지 회색 — 한눈에 파악할 수 있습니다.',
+  b6_badge:'스킨케어 시스템', b6_title_html:'피부색뿐만 아니라<br>피부 타입까지 이해합니다', b6_desc:'AI 사진 분석 + 8문항 인터랙티브 설문으로 6차원 피부 벡터를 구축, 성분 레벨에서 최적의 스킨케어를 매칭합니다.',
+  sk_oil:'피지 분비', sk_sens:'민감도', sk_pig:'색소 침착', sk_age:'주름/노화', sk_hyd:'수분량', sk_acne:'여드름/모공',
+  r_oil:'피지', r_sens:'민감', r_pig:'색소', r_age:'노화', r_hyd:'수분', r_acne:'여드름',
+  b7_badge:'뷰티 백과사전', b7_title:'나만의 뷰티 백과사전', b7_desc:'수천 개의 뷰티 & 스킨케어 제품을 탐색하세요. 모두 개인 맞춤 매칭 점수가 있습니다.',
+  b7_c1_title:'스마트 필터', b7_c1_desc:'카테고리, 브랜드 다중 필터링. 색번, 제품명, 설명 키워드 검색도 지원합니다.', b7_c1_tag:'립스틱 · 아이섀도 · 블러셔 · 파운데이션',
+  b7_c2_title:'5:3:2 추천 알고리즘', b7_c2_desc:'카드 10장 = 추천 5장 + 새로운 스타일 3장 + 트렌드 2장 — 정확성과 발견의 균형.', b7_c2_tag:'맞춤형 피드',
+  b7_c3_title:'즐겨찾기 & 폴더', b7_c3_desc:'원탭 저장, 이모지 폴더로 분류 관리, 일괄 선택 및 이동 지원.', b7_c3_tag:'☀️ 데일리 · 🌹 데이트',
+  b7_c4_title:'성분 분석', b7_c4_desc:'INCI 성분에서 효능 벡터를 자동 계산. 코메도·자극성 등급으로 안심하고 선택하세요.', b7_c4_tag:'150+ 성분 데이터베이스',
+  b8_badge:'커뮤니티', b8_title_html:'베프와 함께<br>아름다움을 발견하세요', b8_desc:'친구 추가, 메이크업 채팅, 좋아하는 제품 공유 — ColorMe로 뷰티를 더 재밌게.',
+  b8_f1_title:'실시간 채팅', b8_f1_desc:'친구와 색번을 상의하고, 채팅에서 제품 카드를 직접 공유하며 매칭 점수도 바로 확인.',
+  b8_f2_title:'컬러 커뮤니티', b8_f2_desc:'"328명이 드라이 로즈" — 같은 컬러 그룹의 인기 아이템과 트렌드를 발견하세요.',
+  b8_f3_title:'IG 스타일 프로필', b8_f3_desc:'그라데이션 그리드로 뷰티 다이어리를 전시. 친구만 볼 수 있어 안심.',
+  chat_name:'안나', chat_status:'온라인', chat_m1:'이 색번 봐! 완전 예쁘다', chat_score:'매칭 96%',
+  chat_m2:'대박 96점이면 완전 내 거잖아!', chat_m3:'그치! 드라이 로즈 계열이 너한테 완전 잘 어울려 🌹', chat_m4:'바로 즐겨찾기 추가 💕',
+  b9_badge:'안전 & 무료', b9_title:'완전 무료, 안심 사용', b9_desc:'모든 기능이 완전 무료입니다. 사진과 데이터는 최고 수준의 보안으로 보호됩니다.',
+  b9_c1_title:'모든 기능 개방', b9_c1_desc:'AI 분석, 전체 리포트, 매칭 점수, 추천 컬러 — 페이월 없이 완전 무료.',
+  b9_c2_title:'사진 저장 안 함', b9_c2_desc:'분석 후 즉시 삭제. 맨 얼굴 사진은 어떤 서버에도 저장되지 않습니다.',
+  b9_c3_title:'데이터 암호화', b9_c3_desc:'모든 개인 데이터는 종단간 암호화 전송. 다이어리 사진은 시간 제한 Signed URL로 친구만 열람 가능.',
+  cta_date:'2026년 5월 1일 출시', cta_title_html:'나만의<br>퍼펙트 컬러를<br>찾을 준비가 됐나요?',
+  cta_desc:'ColorMe를 무료 다운로드하세요. AI로 나에게 가장 어울리는 컬러를 발견하세요. 출시 첫날 다운로드하고 전체 기능을 체험하세요.', cta_appstore:'App Store 다운로드',
+  ft_privacy:'개인정보처리방침', ft_terms:'이용약관', ft_contact:'문의하기'
+}
+};
+
+const langMeta = {
+  'zh-TW': { flag:'🇹🇼', label:'中文' },
+  'en':    { flag:'🇺🇸', label:'EN' },
+  'ja':    { flag:'🇯🇵', label:'日本語' },
+  'ko':    { flag:'🇰🇷', label:'한국어' }
+};
+
+// ===== Apply language =====
+function setLang(lang) {
+  const dict = T[lang]; if (!dict) return;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (!dict[key]) return;
+    if (key.endsWith('_html')) { el.innerHTML = dict[key]; }
+    else if (el.tagName === 'text') { el.textContent = dict[key]; } // SVG text
+    else { el.textContent = dict[key]; }
+  });
+  // Update switcher button
+  document.getElementById('langFlag').textContent = langMeta[lang].flag;
+  document.getElementById('langLabel').textContent = langMeta[lang].label;
+  // Update active state in dropdown
+  document.querySelectorAll('.lang-option').forEach(opt => {
+    opt.classList.toggle('active', opt.dataset.lang === lang);
+  });
+  // Update page title
+  const titles = { 'zh-TW':'ColorMe — 找到最適合你的顏色', 'en':'ColorMe — Find Your Perfect Color', 'ja':'ColorMe — あなたに最も似合うカラーを', 'ko':'ColorMe — 나에게 어울리는 컬러 찾기' };
+  document.title = titles[lang] || titles['zh-TW'];
+  localStorage.setItem('colorme-lang', lang);
+}
+
+// ===== Switcher toggle =====
+const switcher = document.getElementById('langSwitcher');
+document.getElementById('langBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  switcher.classList.toggle('open');
+});
+document.querySelectorAll('.lang-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    setLang(opt.dataset.lang);
+    switcher.classList.remove('open');
+  });
+});
+document.addEventListener('click', () => switcher.classList.remove('open'));
+
+// Init language from localStorage
+const saved = localStorage.getItem('colorme-lang');
+if (saved && T[saved]) setLang(saved);
+
+// ===== Countdown =====
+function updateCountdown() {
+  const target = new Date('2026-05-01T00:00:00+08:00');
+  const now = new Date();
+  const diff = target - now;
+  if (diff <= 0) {
+    document.getElementById('cd-days').textContent = '0';
+    document.getElementById('cd-hours').textContent = '0';
+    document.getElementById('cd-mins').textContent = '0';
+    document.getElementById('cd-secs').textContent = '0';
+    return;
+  }
+  document.getElementById('cd-days').textContent = Math.floor(diff / 864e5);
+  document.getElementById('cd-hours').textContent = String(Math.floor((diff % 864e5) / 36e5)).padStart(2,'0');
+  document.getElementById('cd-mins').textContent = String(Math.floor((diff % 36e5) / 6e4)).padStart(2,'0');
+  document.getElementById('cd-secs').textContent = String(Math.floor((diff % 6e4) / 1e3)).padStart(2,'0');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// ===== Scroll reveal =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// ===== Smooth scroll =====
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) t.scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+});
+</script>
 </body>
 </html>
